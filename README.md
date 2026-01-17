@@ -1,2 +1,3 @@
-# -onsole_calculator
-A python console calculator that can solve examples and draw graphs of equations
+# -onsole calculator
+
+это консольный калькулятор написанный на пайтоне по принципам солид
