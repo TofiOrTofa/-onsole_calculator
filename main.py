@@ -31,17 +31,19 @@ def system():
 
 def choice_expression(numbers):
     def compilate_list(expression, numbers):
-        expression_list=list("")
-        a=1
+        expression_list=list()
+        a=0
         for i in expression:
-            if i in numbers and not a: expression_list[-1]+=i
+            if i in numbers:
+                if not a: expression_list.append(i); a=1
+                elif a: expression_list[-1]+=a
             else:
+                if a: a=0
                 expression_list.append(i)
-                if not a: a=130
-                else: a=0
         print(expression_list)
         return expression_list
-    def find_two_expression(mathematical_sings, expression_list): 
+    def find_two_expression(mathematical_sings, expression_list):
+        backets=False
         pass#недоделанно
     
     mathematical_sings:dict[str:list(str, int)]={}#функция:[знак, значимость]
