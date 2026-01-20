@@ -56,9 +56,11 @@ class score_expression:
         self.numbers=('1', '2', '3', '4', '5', '6', '7', '8', '9', '0')
         self.expression=input("Введите выражение: ").strip()
         self.expression_list=list()
+        self.Bexpression_list=list()
 
         self.compilate_list()
-        self.find_and_compilate_backets_expression()
+        if "(" in self.expression_list:
+            self.find_and_compilate_backets_expression()
         self.find_two_expression()
         self.score_two_expression()
 
@@ -86,9 +88,10 @@ class score_expression:
 
     def find_two_expression(self):
         a=1
-        for i in range(len(self.Bexpression_list)):
-            if self.Bexpression_list[i] in self.mathematical_sd and self.mathematical_sd[self.Bexpression_list[i]][1]==a:
-                self.two_expression:tuple(str, ...)=(self.Bexpression_list[i-1:i+2])
+        b=self.Bexpression_list if self.Bexpression_list else self.expression_list
+        for i in range(len(b)):
+            if b[i] in self.mathematical_sd and self.mathematical_sd[b[i]][1]==a:
+                self.two_expression:tuple(str, ...)=(b[i-1:i+2])
                 return
     def score_two_expression(self):
         #print(self.mathematical_sd[self.two_expression[1]][0](int(self.two_expression[0]), int(self.two_expression[2])))
