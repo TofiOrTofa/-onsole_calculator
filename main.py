@@ -31,7 +31,7 @@ class compilate_string:
             str_second=float(str_second)
         else:
             str_second=int(str_second)
-        print(str_first, str_second)
+        #print(str_first, str_second)
         return str_first, str_second
         
 
@@ -121,7 +121,7 @@ class score_expression:
                 return
     def score_two_expression(self):
         #print(self.two_expression[0], self.two_expression[2])
-        print(self.mathematical_sd[self.two_expression[1]][0].compilate(self.two_expression[0], self.two_expression[2]))
+        #print(self.mathematical_sd[self.two_expression[1]][0].compilate(self.two_expression[0], self.two_expression[2]))
         print(self.mathematical_sd[self.two_expression[1]][0].score(self.mathematical_sd[self.two_expression[1]][0].compilate(self.two_expression[0], self.two_expression[2])))
     def rm_two_expression(self): ...# ---<недоделано>---
     def compilate_list(self):
