@@ -62,6 +62,9 @@ def system():
     subprocess.run(command, shell=True)
     #>---------------------------------
 
+class compilates:
+    def __init__(self): ...
+
 class score_expression:
     def __init__(self, mathematical_sd):
         self.numbers : set
@@ -83,16 +86,15 @@ class score_expression:
         self.expression_list=list()
         self.TimeExpression_list=list()
 
-        self.compilate_list()
-        if "(" in self.expression_list:
-            self.backets=True
+        self.compilate_list() 
+        self.find_Bexpression()
+        if self.backets: 
             self.SaveExpression=tuple(self.expression_list)
-            self.find_and_compilate_backets_expression()
+            self.compilate_Bexpression()
         else:
             self.backets=False
             self.TimeExpression_list=self.expression_list
             self.TimeExpression_start=0
-            self.TimeExpression_end=-1
         while len(self.TimeExpression_list)!=1:
             self.find_TwoExpression()
             self.score_TwoExpression()
@@ -100,13 +102,18 @@ class score_expression:
         print(self.expression_list)
 
 
-    def find_and_compilate_backets_expression(self):
-        for i in range(len(self.expression_list)):
-            if self.expression_list[i]=="(": self.TimeExpression_start=i
-            elif self.expression_list[i]==")":
-                self.TimeExpression_end=i
-                #ответ поставится на место первой скобки, а остольное удалится, можно будет сделать ещё, что бы проверялось есть ли после скобки и до скобки цифра, и если есть, то пишется умножение
-                self.TimeExpression_list=self.expression_list[self.TimeExpression_start+1:self.TimeExpression_end]
+    def find_Bexpression(self):
+        if "(" in self.expression_list:
+            self.TimeExpression_start=self.expression_list.index("(")
+            self.TimeExpression_end=self.expression_list.index(")")
+            self.backets=True
+        else: self.backets=False
+        #for i in range(len(self.expression_list)):
+        #    if self.expression_list[i]=="(": self.TimeExpression_start=i
+        #    elif self.expression_list[i]==")":
+        #        self.TimeExpression_end=i
+        #        #ответ поставится на место первой скобки, а остольное удалится, можно будет сделать ещё, что бы проверялось есть ли после скобки и до скобки цифра, и если есть, то пишется умножение
+        #        return
                 #print(self.TimeExpression_list)
 
                 #нужно дописать, что бы функция вызывала функцию с решением,
@@ -119,6 +126,9 @@ class score_expression:
                 #два варианта:
                   #в первом он должен вызвать сам себя сделав что-то типо рекурсии.
                   #а во втором он должен вернуть какое-нибудь число, или строку, обозначающую, что его надо вызвать повторно
+    def compilate_Bexpression(self):
+        self.TimeExpression_list=self.expression_list[self.TimeExpression_start+1:self.TimeExpression_end]
+    def rm_Bexpression(self): ...
 
     def find_TwoExpression(self):
         a=1
@@ -159,25 +169,19 @@ def connection_json():
 
 def manu():
     a=0
-    print("""
-        выбирите действие:
-            1.решить выражение
-            2.построить график по функции
-            3.история действий
-            4.выход
-          цифра:""", end=" ")
     while a>3 or a<=0:
-        a=int(input())
+        print("""
+выбирите действие>-----------------------------
+                  1.решить выражение
+                  2.построить график по функции
+                  3.история действий
+                  4.выход """)
+        a=int(input("цифра: "))
         if a==1 or a==2 or a==3: return a
         elif a==4: return exit
         else:
-            print("""
-        вы ошиблись выберите ещё раз:
-            1.решить выражение
-            2.построить график по функции
-            3.история действий
-            4.выход
-        цифра:""", end=" ")
+            system()
+            print("вы ошиблись")
 def main():
     choice=manu()
     if choice == 1:
