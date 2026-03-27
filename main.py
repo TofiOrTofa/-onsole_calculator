@@ -14,7 +14,8 @@ class abstract_calculator(ABC):
     @abstractmethod
     def score(self): ...
 
-def add_mathematical_sd(math_sing:str, class_math_sing, math_significance:int):#это функция для добавления новых математисестких символов
+def add_mathematical_sd(math_sing:str, class_math_sing, math_significance:int):
+    #это функция для добавления новых математисестких символов
     mathematical_sd[math_sing]=(class_math_sing, math_significance)
 
 # классы радители классов математических действий>----------------------------
@@ -37,12 +38,14 @@ class compilate_string:
 
 
 # классы математических действий>---------------------------------------------
-class sum_calculate(abstract_calculator, compilate_string):#класс для сложения чисел
+class sum_calculate(abstract_calculator, compilate_string):
+    #класс для сложения чисел
     def compilate(self, num_first, num_second):
         return super().compilate_sif(num_first, num_second)
     def score(self, nums):
         return str(nums[0]+nums[1])
-class subtraction_calculate(abstract_calculator, compilate_string):#класс для вычитания чисел
+class subtraction_calculate(abstract_calculator, compilate_string):
+    #класс для вычитания чисел
     def compilate(self, num_first, num_second):           
         return super().compilate_sif(num_first, num_second)
     def score(self, nums):
@@ -74,79 +77,104 @@ class score_expression:
         self.TimeExpression_list : list
         self.TimeExpression_start : int
         self.TimeExpression_end : int          
-        self.mathematical_sd : dict[str:list(class_sing_calculator, int)] = mathematical_sd
+        self.mathematical_sd : dict[str:list(class_sing_calculator, int)]
         self.TwoExpression : tuple(str, ...)
         self.TwoExpression_start : int
         self.backets : bool#наличие скобок в примере
         self.answer : int or float
+        self.sorterMathSing : list
 
-        #mathematical_sings:dict[str:list(str, int)]={}#знак:[класс, значимость]
+        self.mathematical_sd = mathematical_sd
+        #mathematical_sings:dict[str:list(str, int)]={}#значимость:[класс, знак]
         self.numbers={'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
         self.expression=input("Введите выражение: ").strip()
         self.expression_list=list()
         self.TimeExpression_list=list()
+        self.main()
 
-        self.compilate_list() 
-        self.find_Bexpression()
+    def main(self):
+        self.compilateList() 
+        self.findBacketsExpression()
         if self.backets: 
             self.SaveExpression=tuple(self.expression_list)
-            self.compilate_Bexpression()
+            self.compilateBacketsExpression()
         else:
             self.backets=False
             self.TimeExpression_list=self.expression_list
             self.TimeExpression_start=0
         while len(self.TimeExpression_list)!=1:
-            self.find_TwoExpression()
-            self.score_TwoExpression()
-            self.rm_TwoExpression()
+            self.findTwoExpression()
+            self.scoreTwoExpression()
+            self.removeTwoExpression()
         print(self.expression_list)
 
+    def sortMathSingByImportance(): ...
 
-    def find_Bexpression(self):
+
+    def compilateBacketsExpression(self):
+        self.TimeExpression_list=self.expression_list[
+            self.TimeExpression_start+1:self.TimeExpression_end
+        ]
+
+
+    def findBacketsExpression(self):
         if "(" in self.expression_list:
             self.TimeExpression_start=self.expression_list.index("(")
             self.TimeExpression_end=self.expression_list.index(")")
             self.backets=True
         else: self.backets=False
-        #for i in range(len(self.expression_list)):
-        #    if self.expression_list[i]=="(": self.TimeExpression_start=i
-        #    elif self.expression_list[i]==")":
-        #        self.TimeExpression_end=i
-        #        #ответ поставится на место первой скобки, а остольное удалится, можно будет сделать ещё, что бы проверялось есть ли после скобки и до скобки цифра, и если есть, то пишется умножение
-        #        return
-                #print(self.TimeExpression_list)
-
-                #нужно дописать, что бы функция вызывала функцию с решением,
-                #которая будет решать пример в скобках как обычный и возвращать ответ ввиде числа
-                  #(можно будет сделать, что бы она отправляла каждое действие в историю для функции развёрнутой истории), 
-                
-                #потом мы заменяем пример вместе со скобками из обычного примера на полученное число 
-                #после, когда эта функция будет подходить к концу,
-                #она должна проверять остались ли ещё скобки в примере, и если остались, то она 
-                #два варианта:
-                  #в первом он должен вызвать сам себя сделав что-то типо рекурсии.
-                  #а во втором он должен вернуть какое-нибудь число, или строку, обозначающую, что его надо вызвать повторно
-    def compilate_Bexpression(self):
-        self.TimeExpression_list=self.expression_list[self.TimeExpression_start+1:self.TimeExpression_end]
-    def rm_Bexpression(self): ...
-
-    def find_TwoExpression(self):
+    def findTwoExpression(self):
         a=1
         for i in range(len(self.TimeExpression_list)):
-            if self.TimeExpression_list[i] in self.mathematical_sd and self.mathematical_sd[self.TimeExpression_list[i]][1]==a:
-                self.TwoExpression:tuple(str, ...)=(self.TimeExpression_list[i-1:i+2])
+            
+            if self.TimeExpression_list[i] in self.mathematical_sd:
+                testImportanceMathSing=(
+                    self.mathematical_sd[self.TimeExpression_list[i]][1] == a
+                )
+            else: testImportanceMathSing = False
+
+            if testImportanceMathSing:
+                self.TwoExpression:tuple(str, ...)=(
+                    self.TimeExpression_list[i-1:i+2]
+                )
                 self.TwoExpression_start=i-1
-                return
-    def score_TwoExpression(self):
-        #print(self.TwoExpression[0], self.TwoExpression[2])
-        #print(self.mathematical_sd[self.TwoExpression[1]][0].compilate(self.TwoExpression[0], self.TwoExpression[2]))
-        self.answer=self.mathematical_sd[self.TwoExpression[1]][0].score(self.mathematical_sd[self.TwoExpression[1]][0].compilate(self.TwoExpression[0], self.TwoExpression[2]))
+                return 0
+        return 1#вернёт 0 если найдёт выражения со скобками
+
+
+    def scoreTwoExpression(self):
+        self.answer=self.mathematical_sd[self.TwoExpression[1]][0].score(
+            self.mathematical_sd[self.TwoExpression[1]][0].compilate(
+                self.TwoExpression[0], self.TwoExpression[2]
+            )
+        )
         print(self.answer)
-    def rm_TwoExpression(self):
-        del self.TimeExpression_list[self.TwoExpression_start+1:self.TwoExpression_start+3]
+
+
+    def removeTwoExpression(self):
+        del self.TimeExpression_list[
+            self.TwoExpression_start+1:self.TwoExpression_start+3
+        ]
         self.TimeExpression_list[self.TwoExpression_start]=self.answer
         print(self.TimeExpression_list)
-    def compilate_list(self):
+    def removeBacketsExpression(self): ...
+
+    @staticmethod
+    def noneMathSing(breakMathSing): 
+        print("\n\t",
+            "символ", 
+            f"'{breakMathSing}'",
+            "неизвестен",
+            sep=" "
+        )
+        exit()
+
+
+    def compilateList(self):
+        # a==0 - если только что была цыфра, обозначает математический знак
+        # a==1 - если только что был знак, обозначает цифру
+        # a==3 - обозначает скобку, что было до: не важно
+        # a==4 - обозначает плавающую точку у числа, что было до: не важно
         a=0
         for i in self.expression:
             if i in self.numbers:
@@ -155,8 +183,10 @@ class score_expression:
             elif i=="(" or i==")": self.expression_list.append(i); a=3
             elif i=="." or i==",": self.expression_list[-1]+=i; a=4
             else:
-                if not a or a==4: self.expression_list[-1]+=i
-                else: self.expression_list.append(i); a=0
+                if i in self.mathematical_sd:
+                    if not a or a==4: self.expression_list[-1]+=i
+                    else: self.expression_list.append(i); a=0
+                else: self.noneMathSing(i)
 
 
 
@@ -176,9 +206,9 @@ def manu():
                   2.построить график по функции
                   3.история действий
                   4.выход """)
-        a=int(input("цифра: "))
-        if a==1 or a==2 or a==3: return a
-        elif a==4: return exit
+        userChoice=int(input("цифра: "))
+        if userChoice in (1, 2, 3): return userChoice
+        elif userChoice==4: return exit()
         else:
             system()
             print("вы ошиблись")
