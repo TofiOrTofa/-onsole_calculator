@@ -69,77 +69,62 @@ class compilates:
     def __init__(self): ...
 
 class score_expression:
-    def __init__(self, mathematical_sd):
+    def __init__(self, mathematical_sd, expression):
         self.numbers : set
         self.expression : str
         self.expression_list : list
-        self.SaveExpression : tuple
-        self.TimeExpression_list : list
-        self.TimeExpression_start : int
-        self.TimeExpression_end : int          
+        self.SaveExpression : tuple         
         self.mathematical_sd : dict[str:list(class_sing_calculator, int)]
         self.TwoExpression : tuple(str, ...)
         self.TwoExpression_start : int
-        self.backets : bool#наличие скобок в примере
+        self.backets : list#наличие скобок в примере
         self.answer : int or float
         self.sorterMathSing : list
 
         self.mathematical_sd = mathematical_sd
         #mathematical_sings:dict[str:list(str, int)]={}#значимость:[класс, знак]
-        self.numbers={'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
-        self.expression=input("Введите выражение: ").strip()
+        self.numbers = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}
+        self.expression = expression
         self.expression_list=list()
-        self.TimeExpression_list=list()
-        self.main()
+        self.backets = []
 
     def main(self):
-        self.compilateList() 
-        self.findBacketsExpression()
-        if self.backets: 
-            self.SaveExpression=tuple(self.expression_list)
-            self.compilateBacketsExpression()
-        else:
-            self.backets=False
-            self.TimeExpression_list=self.expression_list
-            self.TimeExpression_start=0
-        while len(self.TimeExpression_list)!=1:
+        print("start -------------")
+        self.compilateList()
+        print("self.backets", self.backets)
+        while self.backets:
+            self.backetsResult = score_expression(
+                self.mathematical_sd,
+                self.expression_list[self.backets[0]][1:-1]
+            ).main()
+            self.replacementBacketExpression()
+            print("self.backetsResult", self.backetsResult)
+        while len(self.expression_list) != 1:
             self.findTwoExpression()
             self.scoreTwoExpression()
             self.removeTwoExpression()
-        print(self.expression_list)
-
-    def sortMathSingByImportance(): ...
-
-
-    def compilateBacketsExpression(self):
-        self.TimeExpression_list=self.expression_list[
-            self.TimeExpression_start+1:self.TimeExpression_end
-        ]
+        print("self.expression_list", self.expression_list)
+        print("end ---------------------")
+        return self.expression_list[0]
 
 
-    def findBacketsExpression(self):
-        if "(" in self.expression_list:
-            self.TimeExpression_start=self.expression_list.index("(")
-            self.TimeExpression_end=self.expression_list.index(")")
-            self.backets=True
-        else: self.backets=False
     def findTwoExpression(self):
         a=1
-        for i in range(len(self.TimeExpression_list)):
-            
-            if self.TimeExpression_list[i] in self.mathematical_sd:
-                testImportanceMathSing=(
-                    self.mathematical_sd[self.TimeExpression_list[i]][1] == a
+        for i in range(len(self.expression_list)):
+            print(f"self.expression_list[{i}]", self.expression_list[i])
+            if self.expression_list[i] in self.mathematical_sd:
+                testImportanceMathSing = (
+                    self.mathematical_sd[self.expression_list[i]][1] == a
                 )
             else: testImportanceMathSing = False
 
             if testImportanceMathSing:
-                self.TwoExpression:tuple(str, ...)=(
-                    self.TimeExpression_list[i-1:i+2]
+                self.TwoExpression = (
+                    self.expression_list[i-1:i+2]
                 )
-                self.TwoExpression_start=i-1
+                self.TwoExpression_start = i - 1
                 return 0
-        return 1#вернёт 0 если найдёт выражения со скобками
+        print("aaa")
 
 
     def scoreTwoExpression(self):
@@ -152,18 +137,23 @@ class score_expression:
 
 
     def removeTwoExpression(self):
-        del self.TimeExpression_list[
+        del self.expression_list[
             self.TwoExpression_start+1:self.TwoExpression_start+3
         ]
-        self.TimeExpression_list[self.TwoExpression_start]=self.answer
-        print(self.TimeExpression_list)
-    def removeBacketsExpression(self): ...
+        self.expression_list[self.TwoExpression_start] = self.answer
+        print(self.expression_list)
+    def replacementBacketExpression(self):
+        self.expression_list[
+            self.backets[0]
+        ] = self.backetsResult
+        del self.backets[0]
+        print("self.expression_list", self.expression_list)
 
     @staticmethod
     def noneMathSing(breakMathSing): 
         print("\n\t",
             "символ", 
-            f"'{breakMathSing}'",
+            "\"%s\"" % breakMathSing,
             "неизвестен",
             sep=" "
         )
@@ -171,23 +161,40 @@ class score_expression:
 
 
     def compilateList(self):
-        # a==0 - если только что была цыфра, обозначает математический знак
-        # a==1 - если только что был знак, обозначает цифру
-        # a==3 - обозначает скобку, что было до: не важно
-        # a==4 - обозначает плавающую точку у числа, что было до: не важно
-        a=0
-        for i in self.expression:
-            if i in self.numbers:
-                if not a or a==3: self.expression_list.append(i); a=1
-                elif a: self.expression_list[-1]+=i
-            elif i=="(" or i==")": self.expression_list.append(i); a=3
-            elif i=="." or i==",": self.expression_list[-1]+=i; a=4
-            else:
-                if i in self.mathematical_sd:
-                    if not a or a==4: self.expression_list[-1]+=i
-                    else: self.expression_list.append(i); a=0
-                else: self.noneMathSing(i)
-
+        #                                                                        flag == 0 - скобочное вырожение
+        #                                                                        flag == 1 - цифра
+        #                                                                        flag == 2 - плавающая точка
+        #                                                                        flag == 4 - математический знак
+        flag = 0
+        count = 0
+        while count < len(self.expression):
+            if self.expression[count] in self.numbers:#                          числа
+                if not flag or flag == 4:
+                    self.expression_list.append(
+                        self.expression[count]
+                    ); flag = 1
+                elif flag: 
+                    self.expression_list[-1] += self.expression[count] 
+            elif (#                                                              плавающие точки
+                self.expression[count] == "." or 
+                self.expression[count] == ","
+            ):  self.expression_list[-1] += self.expression[count]; flag = 2
+            elif self.expression[count] == "(": #                                скобки
+                self.expression_list.append(self.expression[count])
+                while self.expression[count] != ")": 
+                    count += 1
+                    self.expression_list[-1] += self.expression[count]
+                flag = 0
+                self.backets.append(len(self.expression_list) - 1)
+            elif self.expression[count] in mathematical_sd:#                     математические знаки
+                if flag in (0, 1): 
+                    self.expression_list.append(self.expression[count])
+                else: self.expression_list[-1] += self.expression[count]
+                flag = 4
+            else: self.noneMathSing(self.expression[count])
+            count += 1
+def request_expression():
+    return input("Введите выражение: ").strip()
 
 
 
@@ -198,8 +205,8 @@ def connection_json():
         history = json.load(f)
 
 def manu():
-    a=0
-    while a>3 or a<=0:
+    a = 0
+    while a > 3 or a <= 0:
         print("""
 выбирите действие>-----------------------------
                   1.решить выражение
@@ -208,18 +215,18 @@ def manu():
                   4.выход """)
         userChoice=int(input("цифра: "))
         if userChoice in (1, 2, 3): return userChoice
-        elif userChoice==4: return exit()
+        elif userChoice == 4: return exit()
         else:
             system()
             print("вы ошиблись")
 def main():
-    choice=manu()
+    choice = manu()
     if choice == 1:
         #здесь можно вызывать функцию для добавления новых математических символов
         add_mathematical_sd("+", sum_calculate(), 1)
         add_mathematical_sd("-", subtraction_calculate(), 1)
 
-        score_expression(mathematical_sd)
+        result = score_expression(mathematical_sd, request_expression()).main()
     
 
 if __name__=='__main__':
