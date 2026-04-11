@@ -65,8 +65,6 @@ def system():
     subprocess.run(command, shell=True)
     #>---------------------------------
 
-class compilates:
-    def __init__(self): ...
 
 class score_expression:
     def __init__(self, mathematical_sd):
@@ -223,6 +221,6 @@ def main():
     
 
 if __name__=='__main__':
-    mathematical_sd:dict[str:tuple()]={}
+    mathematical_sd : dict[str:tuple()]={}
     system()
     main()
