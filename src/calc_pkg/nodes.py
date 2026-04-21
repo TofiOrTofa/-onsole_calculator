@@ -1,3 +1,4 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 
 # абстрактные классы>--------------------
@@ -18,9 +19,9 @@ class MathSignsAbstract(ABC):
     @abstractmethod
     def score(self)->object: ...
 
-class MathSignsInfo:
+class MathSigns:
     def __init__(self)->None:
-        self._signs : dict[
+        self._signs_info : dict[
             str : tuple(
                 object,# объект знака
                 int# значимость знака
@@ -35,44 +36,43 @@ class MathSignsInfo:
             "min" : None,
             "max" : None
         }
-        self._signs = {}
-    def add(self,
-        symbol     : str,
-        name       : type,
-        importance : int
-    ):#>--------------------<#
-        self._signs[symbol] = (name, importance)
-        if not (
-            self._importance["min"] is None or
-            self._importance["max"] is None
-        ):#>--------------------<#
-            if importance > self.get_importance(self._importance["max"]):
-                self._importance["max"] = symbol
-            elif importance < self.get_importance(self._importance["min"]):
-                self._importance["min"] = symbol
-        else: 
-            self._importance["min"] = symbol
-            self._importance["max"] = symbol
+        self._signs_info = {}
+        self._signs_name = set()
+        self._signs_importance = list()
+    def add(self, symbol:str, class_name:type, importance:int):
+        self._signs_info[symbol] = (class_name, importance)
+        self._signs_name.add(symbol)
+        self._signs_importance.append(importance)
+
+        self._signs_importance.sort()
 
             
 
     def get_class(self, symbol:str) -> type:
-        return self._signs[symbol][0]
+        return self._signs_info[symbol][0]
+
     def get_importance(self, symbol:str) -> int:
-        return self._signs[symbol][1]
-    def get_min(self) -> str:
-        return self._importance["min"]
-    def get_max(self) -> str:
-        return self._importance["max"]
+        return self._signs_info[symbol][1]
+    def get_min_importance(self) -> int:
+        return self._signs_importance[0]
+    def get_max_importance(self) -> int:
+        return self._signs_importance[-1]
+
     def get_symbol(self, importance:int):
-        key : str; value : tuple[type, int]
         symbols = list()
-        for key, value in self._signs.items():
+        for key, value in self._signs_info.items():
+            key:str
+            value:tuple[type, int]
             if importance == value[1]:
                 symbols.append(key)
         return symbols
+    def get_min_symbol(self):
+        return self.get_symbol(self._signs_importance[0])
+    def get_max_symbol(self):
+        return self.get_symbol(self._signs_importance)
+        
     def availability_test(self, symbol:str) -> bool:
-        return symbol in self._signs
+        return symbol in self._signs_info
 
 
 class Constant:
@@ -91,19 +91,7 @@ class Constant:
             return ReducedFraction(numerator, denominator)
         return ReducedFraction(int(self._content), 1)
 # матиматические типы данных>--------------------
-class Fraction():
-    def __init__(self,
-        numerator : Constant,
-        denominator : Constant = 1
-    ):#>--------------------<#
-        self._n : Constant = numerator
-        self._d : Constant = denominator
-    def score(self): 
-        return ReducedFraction(
-            self._n.score(),
-            self._d.score()
-        )
-class ReducedFraction(Operand, Fraction):
+class ReducedFraction(Operand):
     def __init__(self, n:int, d:int)->None:
         gcp : int = self._find_gcp(n, d)
         self._n : int = n // gcp
@@ -118,19 +106,19 @@ class ReducedFraction(Operand, Fraction):
             result += f" ({self._n / self._d})"
         return  result
         
-    def __add__(self, other:object) -> Fraction:# сложение
+    def __add__(self, other:object) -> ReducedFraction:# сложение
         new_n = self._n * other._d + other._n * self._d
         new_d = self._d * other._d
         return ReducedFraction(new_n, new_d)
-    def __sub__(self, other:object) -> Fraction:# вычетание
+    def __sub__(self, other:object) -> ReducedFraction:# вычетание
         new_n = self._n * other._d - other._n * self._d
         new_d = self._d * other._d
         return ReducedFraction(new_n, new_d)
-    def __mul__(self, other:object) -> Fraction:# умножение
+    def __mul__(self, other:object) -> ReducedFraction:# умножение
         new_n = self._n * other._n
         new_d = self._d * other._d
         return ReducedFraction(new_n, new_d)
-    def __truediv__(self, other:object) -> Fraction:# деление
+    def __truediv__(self, other:object) -> ReducedFraction:# деление
         new_n = self._n * other._d
         new_d = self._d * other._n
         return ReducedFraction(new_n, new_d)
