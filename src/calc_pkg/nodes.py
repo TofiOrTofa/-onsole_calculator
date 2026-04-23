@@ -39,12 +39,20 @@ class MathSigns:
         self._signs_info = {}
         self._signs_name = set()
         self._signs_importance = list()
-    def add(self, symbol:str, class_name:type, importance:int):
-        self._signs_info[symbol] = (class_name, importance)
-        self._signs_name.add(symbol)
-        self._signs_importance.append(importance)
+    def add(self, symbol:str, importance:int, class_name:type=None):
+        def decorator(math_object):
+            self._signs_info[symbol] = (math_object, importance)
+            self._signs_name.add(symbol)
+            self._signs_importance.append(importance)
 
-        self._signs_importance.sort()
+            self._signs_importance.sort()
+            return math_object
+        
+        if class_name is not None:
+            decorator(class_name)
+        else:
+            return decorator
+        
 
             
 
@@ -131,46 +139,3 @@ class ReducedFraction(Operand):
             tmp = gcd1 % gcd2
             gcd1, gcd2 = gcd2, tmp
         return gcd1
-
-
-# объекты мат. знаков>--------------------
-class Sum(MathSignsAbstract):
-    def __init__(self, first_operand:object, second_operand:object)->None:
-        self._fo : object = first_operand
-        self._so : object = second_operand
-    def score(self):
-        return self._fo.score() + self._so.score()
-class Difference(MathSignsAbstract):
-    def __init__(self, first_operand:object, second_operand:object)->None:
-        self._fo = first_operand
-        self._so = second_operand
-    def score(self)->object:
-        return self._fo.score() - self._so.score()
-class Product(MathSignsAbstract):
-    def __init__(self,
-        first_operand  : object,
-        second_operand : object
-    ):#>--------------------<#
-        self._fo : object = first_operand
-        self._so : object = second_operand
-    def score(self):
-        return self._fo.score() * self._so.score()
-class Quotient(MathSignsAbstract):
-    def __init__(self,
-        first_operand  : object,
-        second_operand : object
-    ):#>--------------------<#
-        self._fo : object = first_operand
-        self._so : object = second_operand
-    def score(self):
-        return self._fo.score() / self._so.score()
-class Ratio(MathSignsAbstract):
-    def __init__(self,
-        first_operand  : object,
-        second_operand : object
-    ):#>--------------------<#
-        self._fo : object = first_operand
-        self._so : object = second_operand
-    def score(self):
-        result = self._fo.score() / self._so.score()
-        return result * ReducedFraction(100, 1)

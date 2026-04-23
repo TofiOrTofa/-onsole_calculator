@@ -5,7 +5,7 @@ import subprocess
 import os
 
 from calc_pkg import parser
-from calc_pkg import nodes
+from math_signs_config import signs
 
 
 def system():
@@ -36,20 +36,19 @@ def menu():
 def main():
     choice=menu()
     if choice == 1:
-        math_signs = nodes.MathSigns()
-        #вызыов функции для добавления новых математических символов
-        math_signs.add("+", nodes.Sum, 1)
-        math_signs.add("-", nodes.Difference, 1)
-        math_signs.add("*", nodes.Product, 2)
-        math_signs.add("/", nodes.Quotient, 2)
-        math_signs.add("%", nodes.Ratio, 2)
-
-        expression_objects = parser.Expression(
-            math_signs,
-            input("Введите выражение: ")
-        )
-        result = expression_objects.score()
-        print("Ответ:", result)
+        print("Ввидите выражение:", end="\n\t")
+        user_expression = input()
+        result = ""
+        while user_expression:
+            expression_objects = parser.Expression(
+                signs,
+                str(result)+user_expression
+            )
+            result = expression_objects.score()
+            print("\n\t", result, sep="", end="")
+            user_expression = input()
+        system()
+        print("\nОтвет:", result)
 
 
 if __name__=='__main__':

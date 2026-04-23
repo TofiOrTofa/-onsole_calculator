@@ -38,6 +38,7 @@ class Expression:
             UndoundLocalError: when finding an unknown symbol
         """
 
+        expression = expression.strip(" ")
         min_importance:int = self._signs.get_max_importance()
 
         depth = 0
@@ -58,13 +59,12 @@ class Expression:
             elif char == ')':
                 depth -= 1
             if not depth:
-                if char in NUMBERS:
-                    continue
+                if self._signs.availability_test(char):
+                    char_importance = self._signs.get_importance(char)
+                    if char_importance < min_importance:
+                        min_importance = char_importance
                 else:
-                    if self._signs.availability_test(char):
-                        char_importance = self._signs.get_importance(char)
-                        if char_importance<min_importance:
-                            min_importance = char_importance
+                    continue
 
         depth = 0
 
