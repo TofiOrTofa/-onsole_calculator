@@ -1,45 +1,45 @@
 """module - example compiler"""
-from typing import Final
 
 from calc_pkg import nodes
 
-NUMBERS: Final = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
+
+
+#class Lexer:
+#    """
+#    names data tokens:
+#        1. SignsType
+#        2. NumberType
+#        3. BacketType
+#    """
+#    def __init__(self, signs: object) -> None:
+#        self._signs = signs
+#
+#    def tokenize(self, expression: str) -> list[nodes.Token]:
+#        tokens = []
+#        index = 0
+#        while index < len(expression):
+#            if nodes.SignsType.test_in(expression[index]):
+#                tokens.append(
+#                    nodes.Token(
+#                        kind = "Signs",
+#                        value = expression[index]
+#                    )
+#                )
+#            else:
+#                return 1, expression[index]
+#class Parser: ...
+#class Evalator: ...
+
 
 class Expression:
-    """object - compiler expression in object tree
-
-    attributes:
-        _signs (object): save dictionary math signs 
-        _expression (object): math object tree
-    """
     def __init__(self, signs:object, user_expression:str):
-        """
-        args:
-            signs (object): dictionary object for calculator characters
-            user_expression (str): raw example entered by the user
-        """
         self._signs = signs
         self._expression = self._compilate(user_expression)
 
-    def _compilate(self, expression:str):
-        """compiler expression in object tree
-
-        The compiler leaning on importance math symbols when compiling
-        expression into a tree of objects that are ready calculations
-
-        Args:
-            expression (str): raw example entered by the user
-
-        Returns:
-            nodes.Constant: if example is number
-            object: object math sign branching into two subexpressions
-        
-        Raises:
-            UndoundLocalError: when finding an unknown symbol
-        """
+    def _compilate(self, expression:str)->object:
 
         expression = expression.strip(" ")
-        min_importance:int = self._signs.get_max_importance()
+        min_importance:int = self._signs.importance.ceiling()
 
         depth = 0
         for char_index, char in enumerate(expression):
@@ -54,13 +54,17 @@ class Expression:
 
         depth = 0
         for char in expression:
+            if char.isdigit():
+                continue
+
             if char == '(':
                 depth += 1
             elif char == ')':
                 depth -= 1
+
             if not depth:
                 if self._signs.availability_test(char):
-                    char_importance = self._signs.get_importance(char)
+                    char_importance = self._signs.importance[char]
                     if char_importance < min_importance:
                         min_importance = char_importance
                 else:
@@ -69,7 +73,7 @@ class Expression:
         depth = 0
 
         for char_index, char in enumerate(expression[::-1]):
-            if char in NUMBERS:
+            if char.isdigit():
                 continue
 
             elif char == '(':
@@ -80,9 +84,9 @@ class Expression:
                 continue
 
             if depth == 0:
-                char_importance = self._signs.get_importance(char)
+                char_importance = self._signs.importance[char]
                 if char_importance == min_importance :
-                    sign_class:type = self._signs.get_class(char)
+                    sign_class:type = self._signs[char]["obj_name"]
                     return sign_class(
                         self._compilate(expression[:-char_index-1]),
                         self._compilate(expression[-char_index:])
@@ -91,9 +95,4 @@ class Expression:
 
 
     def score(self):
-        """launch of the solition
-
-        Returns:
-            node.ReducedFraction
-        """
         return self._expression.score()

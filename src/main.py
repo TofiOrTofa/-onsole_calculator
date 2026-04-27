@@ -4,7 +4,7 @@
 import subprocess
 import os
 
-from calc_pkg import parser
+from calc_pkg.expression import parser
 from math_signs_config import signs
 
 
