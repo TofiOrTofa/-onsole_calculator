@@ -1,56 +1,23 @@
 #!/usr/bin/env -S python3 -u
-"""-onsole colculator"""
+"""console colculator"""
 
-import subprocess
-import os
+from modules.calc_pkg import nodes
+from modules import menu
 
-from calc_pkg.expression import parser
-from math_signs_config import signs
+def main() -> None:
 
-
-def system():
-    #очистка терминала>----------------
-    if os.name == "nt":
-        command='cls'
-    else:
-        command='clear'
-    subprocess.run([command], check=False)
-    #>---------------------------------
-def menu():
-    a=0
-    while a>3 or a<=0:
-        print("""
-выбирите действие>-----------------------------
-                  1.решить выражение
-                  2.построить график по функции
-                  3.история действий
-                  4.выход """)
-        userChoice=int(input("цифра: "))
-        if userChoice in (1, 2, 3):
-            return userChoice
-        elif userChoice==4:
-            return exit()
-        else:
-            system()
-            print("вы ошиблись")
-def main():
-    choice=menu()
-    if choice == 1:
-        print("Ввидите выражение:", end="\n\t")
-        user_expression = input()
-        result = ""
-        while user_expression:
-            expression_objects = parser.Expression(
-                signs,
-                str(result)+user_expression
-            )
-            result = expression_objects.score()
-            print("\n\t", result, sep="", end="")
-            user_expression = input()
-        system()
-        print("\nОтвет:", result)
+    result = ""
+    while not result:
+        nodes.terminal_clear()
+        result = menu.print_menu()
+        try:
+            if len(result) > 1:
+                menu.Menu[result[0]](result[1])
+            else:
+                menu.Menu[result[0]]()
+        except Exception as e:
+            print(e)
 
 
-if __name__=='__main__':
-    system()
+if __name__ == "__main__":
     main()

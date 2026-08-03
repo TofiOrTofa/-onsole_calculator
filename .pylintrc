@@ -1,0 +1,6 @@
+[MESSAGES CONTROL]
+# Отключаем докстринги, лишние пробелы и отсутствие пустой строки в конце
+disable=
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring
