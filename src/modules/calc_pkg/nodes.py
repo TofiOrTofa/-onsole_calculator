@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     US: TypeAlias = 'UnarySign'
     SM: TypeAlias = 'SignMap'
 
+    decorator: TypeAlias = 'Callable[[T_cls], T_cls]'
+
 
 
 @dataclass(frozen=True)
@@ -78,7 +80,7 @@ class MathType(Protocol):
 
 class OneReleaseType(MathType, Protocol):
 
-    def __call__(self, source: str) -> 'Callable[[T_cls], T_cls]': ...
+    def __call__(self, source: str) -> 'decorator': ...
 
 # >--------------------------------------
 
@@ -113,10 +115,7 @@ class Signs:
     def __init__(self) -> None:
         self._data = {}
 
-    def binary(self,
-               source: str,
-               priority: int = 0
-               ) -> 'Callable[[T_cls], T_cls]':
+    def binary(self, source: str, priority: int = 0) -> 'decorator':
         def decorator(cls: 'T_cls') -> 'T_cls':
             if source not in self._data:
                 self._data[source] = {}
@@ -130,7 +129,7 @@ class Signs:
     def unary(self,
               source: str,
               position: Literal["prefix", "postfix"]
-              ) -> Callable[[T_cls], T_cls]:
+              ) -> 'decorator':
         def decorator(cls: T_cls) -> T_cls:
             if source not in self._data:
                 self._data[source] = {}

@@ -53,7 +53,7 @@ class PrioritySearcher:
 
     def __init__(self) -> None:
         self._types = nodes.token_types
-        
+
     def min(self, expression: 'List[T]', brackets_role_test):
         depth = 0
         for token in expression:
@@ -80,8 +80,8 @@ class Parser:
         if not depth:
             except(...)#TO_DO: нужно написать нормальную ошибку
         for token in self._expression:
-            
-   
+
+
     def brackets_role_test(self, token, depth):
         type_brackets = self._brackets.get_role(token)
         if type_brackets == "open":
